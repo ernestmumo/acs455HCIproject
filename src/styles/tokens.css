@@ -1,0 +1,169 @@
+/* 
+  I. System Tokens (Base Layer) 
+  The raw, canonical color assets.
+*/
+:root {
+  /* Red Palette */
+  --color-red-50: #fef2f2;
+  --color-red-100: #fee2e2;
+  --color-red-500: #ef4444;
+  --color-red-600: #dc2626;
+  --color-red-700: #b91c1c;
+
+  /* Green Palette */
+  --color-green-50: #f0fdf4;
+  --color-green-100: #dcfce7;
+  --color-green-500: #22c55e;
+  --color-green-600: #16a34a;
+  --color-green-700: #15803d;
+
+  /* Blue Palette */
+  --color-blue-50: #eff6ff;
+  --color-blue-100: #dbeafe;
+  --color-blue-500: #3b82f6;
+  --color-blue-600: #2563eb;
+  --color-blue-700: #1d4ed8;
+
+  /* Yellow/Amber Palette */
+  --color-amber-50: #fffbeb;
+  --color-amber-100: #fef3c7;
+  --color-amber-500: #f59e0b;
+  --color-amber-600: #d97706;
+
+  /* Magenta/Brown Palette (Alternative Errors) */
+  --color-magenta-700: #be185d;
+  --color-brown-700: #78350f;
+
+  /* Neutral/Grayscale Palette */
+  --color-neutral-0: #ffffff;
+  --color-neutral-50: #fafafa;
+  --color-neutral-100: #f5f5f5;
+  --color-neutral-200: #e5e5e5;
+  --color-neutral-800: #262626;
+  --color-neutral-900: #171717;
+
+  /* Earthy Tones Palette (Modern UI) */
+  --color-earth-cream: #FAF3E0;
+  --color-earth-light-taupe: #D7CCC8;
+  --color-earth-medium-taupe: #BCAAA4;
+  --color-earth-dark-taupe: #A1887F;
+  --color-earth-rich-brown: #7B5B4A;
+
+  /* Semantic UI Tokens */
+  --color-surface-primary: var(--color-earth-cream);
+  --color-surface-secondary: var(--color-earth-light-taupe);
+  --color-surface-elevated: rgba(255, 255, 255, 0.8);
+  --color-border-subtle: var(--color-earth-medium-taupe);
+  --color-text-primary: var(--color-earth-rich-brown);
+  --color-text-secondary: var(--color-earth-dark-taupe);
+  --color-text-tertiary: var(--color-earth-medium-taupe);
+}
+
+/* 
+  II. Theme Tokens (Role-Based Layer)
+  Defining color by function, not hue.
+*/
+
+/* Default Theme (Western Context) */
+:root,
+[data-theme='western'] {
+  /* Functional Zone */
+  --color-functional-error: var(--color-red-600);
+  --color-functional-error-bg: var(--color-red-50);
+  --color-functional-success: var(--color-green-600);
+  --color-functional-success-bg: var(--color-green-50);
+  --color-functional-warning: var(--color-amber-600);
+  --color-functional-warning-bg: var(--color-amber-50);
+
+  /* Brand Zone */
+  --color-brand-primary: var(--color-blue-600);
+  --color-brand-primary-hover: var(--color-blue-700);
+  --color-brand-bg: var(--color-blue-50);
+}
+
+/* East Asian Theme (Red = Luck, White = Mourning Avoidance) */
+[data-theme='east-asian'] {
+  /* Functional Zone: Avoid Red for Error */
+  --color-functional-error: var(--color-magenta-700);
+  /* or Brown */
+  --color-functional-error-bg: var(--color-red-50);
+  /* Keep light tint or shift */
+  --color-functional-success: var(--color-green-600);
+  --color-functional-success-bg: var(--color-green-50);
+  --color-functional-warning: var(--color-amber-600);
+  --color-functional-warning-bg: var(--color-amber-50);
+
+  /* Brand Zone: Red is celebrated */
+  --color-brand-primary: var(--color-red-600);
+  --color-brand-primary-hover: var(--color-red-700);
+  --color-brand-bg: var(--color-red-50);
+}
+
+/* Middle Eastern Theme */
+[data-theme='middle-eastern'] {
+  /* Functional Zone */
+  --color-functional-error: var(--color-red-600);
+  --color-functional-error-bg: var(--color-red-50);
+  /* Success: Careful with Green (Religious), but generally accepted if dual-coded. 
+     Could shift to Blue for success if strictly needed, but Green is standard. 
+     Let's keep Green but ensure dual coding. */
+  --color-functional-success: var(--color-green-600);
+  --color-functional-success-bg: var(--color-green-50);
+
+  /* Brand Zone: Localized preference (e.g., Teal/Gold/Blue) */
+  --color-brand-primary: var(--color-blue-700);
+  /* Darker, richer blue */
+  --color-brand-primary-hover: var(--color-blue-800);
+  --color-brand-bg: var(--color-blue-50);
+}
+
+/* South Asian Theme (India, etc.) */
+[data-theme='south-asian'] {
+  /* Functional Zone: Red is auspicious (Weddings/Festivals), but also Danger.
+     To be safe and distinct from "Lucky Red", we can use a darker, more alarmist red 
+     or shift to Orange/Saffron for warnings and keep Red for errors but rely heavily on icons.
+     Let's use a standard Red for Error but a very vibrant Saffron/Orange for Brand. */
+  --color-functional-error: var(--color-red-600);
+  --color-functional-error-bg: var(--color-red-50);
+  --color-functional-success: var(--color-green-600);
+  --color-functional-success-bg: var(--color-green-50);
+  --color-functional-warning: var(--color-amber-600);
+  --color-functional-warning-bg: var(--color-amber-50);
+
+  /* Brand Zone: Vibrant Saffron/Orange is highly culturally resonant */
+  --color-brand-primary: var(--color-amber-600);
+  --color-brand-primary-hover: var(--color-amber-700);
+  --color-brand-bg: var(--color-amber-50);
+}
+
+/* 
+  III. Financial Tokens (TradeFlow Specific)
+  Handling the Red/Green Reversal for Stock Markets.
+*/
+
+/* Default / Western / Middle Eastern */
+:root,
+[data-theme='western'],
+[data-theme='middle-eastern'] {
+  --color-finance-profit: var(--color-green-600);
+  --color-finance-profit-bg: var(--color-green-50);
+  --color-finance-loss: var(--color-red-600);
+  --color-finance-loss-bg: var(--color-red-50);
+}
+
+/* All Asian Themes (East Asian, South Asian) */
+/* REVERSAL: Red is Up (Profit), Green is Down (Loss) */
+[data-theme='east-asian'],
+[data-theme='south-asian'] {
+  --color-finance-profit: var(--color-red-600);
+  --color-finance-profit-bg: var(--color-red-50);
+  --color-finance-loss: var(--color-green-600);
+  --color-finance-loss-bg: var(--color-green-50);
+}
+
+/* Global Utilities */
+body {
+  background: linear-gradient(135deg, var(--color-earth-cream) 0%, var(--color-earth-light-taupe) 100%);
+  color: var(--color-text-primary);
+  font-family: 'Montserrat', system-ui, -apple-system, sans-serif;
+}
