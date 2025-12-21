@@ -20,8 +20,8 @@ The most significant divergence in financial UI design exists between Western an
 - **Green/Blue** = Loss / Down / Bad ("Calm", "Cold")
 - **HCI Implication**: A Chinese investor seeing a screen full of Red perceives a "Bull Market" (Boom), whereas a Western investor sees a "Crash".
 - **Research**:
-    - *“In China, red is the color of good luck and celebration... Consequently, red is used to denote a rise in stock prices.”* [Vertex AI Search Summary]
-    - *“This distinction is so pronounced that Chinese investors seeing 'all red' on their portfolio would perceive it as a good sign.”* [Vertex AI Search Summary]
+    - *“In China, red is the color of good luck and celebration... Consequently, red is used to denote a rise in stock prices.”* 
+    - *“This distinction is so pronounced that Chinese investors seeing 'all red' on their portfolio would perceive it as a good sign.”* 
 
 ### The Conflict
 A static UI that hardcodes `color: green` for profit will fundamentally confuse or mislead a significant portion of the global population. This violates the HCI principle of **Consistency** with the user's mental model.
@@ -38,8 +38,8 @@ TradeFlow goes beyond simple text translation (i18n) to implement **Cultural Loc
     - A Middle Eastern user sees **Teal/Blue** for +5% (avoiding religious connotations of Green if necessary, or simply adhering to local preference).
 
 **Research Context**:
-- *“Cross-cultural design in HCI focuses on understanding how cultural values, beliefs, and behaviors influence user interaction... Ignoring cultural differences can lead to product failure.”* [Vertex AI Search Summary]
-- *“Localization... goes beyond translation to make a product feel natural to the target audience.”* [Vertex AI Search Summary]
+- *“Cross-cultural design in HCI focuses on understanding how cultural values, beliefs, and behaviors influence user interaction... Ignoring cultural differences can lead to product failure.”* 
+- *“Localization... goes beyond translation to make a product feel natural to the target audience.”* 
 
 ### B. Dual Coding & Accessibility
 To support users with Color Vision Deficiency (CVD) and to reduce cognitive load, TradeFlow implements **Dual Coding Theory**.
@@ -51,8 +51,8 @@ To support users with Color Vision Deficiency (CVD) and to reduce cognitive load
 - **Benefit**: Even if a user cannot distinguish Red from Green (Deuteranopia), the Arrow and Sign provide redundant, unambiguous cues.
 
 **Research Context**:
-- *“Dual coding principles are crucial for ensuring that information conveyed visually is also comprehensible to individuals with color vision deficiencies.”* [Vertex AI Search Summary]
-- *“When color is the only indicator... colorblind users may miss crucial information.”* [Vertex AI Search Summary]
+- *“Dual coding principles are crucial for ensuring that information conveyed visually is also comprehensible to individuals with color vision deficiencies.”* 
+- *“When color is the only indicator... colorblind users may miss crucial information.”* 
 
 ### C. Glassmorphism & Modern Aesthetics
 The UI employs **Glassmorphism** (translucency, blur) and an **Earthy Color Palette** to reduce visual fatigue and create a hierarchy of depth.
@@ -69,6 +69,6 @@ TradeFlow serves as a case study in **Inclusive Design**. By treating "Culture" 
 
 ---
 **References & Further Reading**:
-1. [Cultural Color Symbolism in Finance](https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHbHbbo56A7hHah1HeoJElLcFikTap2KBvwX5ntteL_5JDRVQPeQEFTI0oOWLqdu6zpzK4dvKG5SIsRFUryJrimdCzcxalbNWe6MfsD-Gv0MhoC_1h9fV4vRW71_Rlo9dZm3z5NOPUbKiZDkvMLCbWGruUOYXVKBMCz-xOkNPkPRw8=)
-2. [HCI Cross-Cultural Design Guidelines](https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFKsAlxuYR3YBuNmAf2dmmoFkoeuQebe5OayNvdkc90E-ewp4JlGFaKTa_9xB311bqlK8prsdthpysHNfMALl1EICUazHqBPetzUb-pDRb3LEufyq11R_2SELfAwu48tR4gdpA4wgWJtK379Dq5tA0JlMR5NK-YqMxgzgxBXO-soCxG-GI=)
-3. [Dual Coding Theory & Accessibility](https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGhBdF3MjsEHSW5aoDMncJiJ2RzuPZZENelmSpSXtTuV2rTkGDaSYoTuG6MFklueS4YUV85hF5tVAU-u8ayByc-en8JhXaUgrTT0_NVEFmvlkWhBfUUBge5AWcDGfbTzPLcXrzkeOWsML8p3n6lTg-73WE4XoCLfr0oDy9tzIsWK_G3w-SmYtlg9fTKcbk=)
+1. [Cultural Color Symbolism in Finance](https://www.annakoh.com/blog/the-meaning-of-colors-in-the-stock-market)
+2. [HCI Cross-Cultural Design Guidelines](https://userpeek.com/blog/cross-cultural-ux-design-a-comprehensive-guide/)
+3. [Dual Coding Theory & Accessibility](https://www.learning-theories.org/doku.php?id=learning_theories:dual_coding_theory)

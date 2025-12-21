@@ -289,24 +289,28 @@ export const CandleChart: React.FC<CandleChartProps> = ({ symbol, interval, indi
 
     // --- Effect to Update Chart with Live Data ---
     useEffect(() => {
-        if (liveCandle && candlestickSeriesRef.current) {
-            candlestickSeriesRef.current.update(liveCandle);
+        if (liveCandle && candlestickSeriesRef.current && chartRef.current) {
+            try {
+                candlestickSeriesRef.current.update(liveCandle);
 
-            // Update React Query Cache to persist the live candle
-            // This ensures that if we toggle indicators (re-render), we have the latest data
-            queryClient.setQueryData(['klines', symbol, interval], (oldData: any) => {
-                if (!oldData) return oldData;
-                const newData = [...oldData];
-                const lastCandle = newData[newData.length - 1];
+                // Update React Query Cache to persist the live candle
+                // This ensures that if we toggle indicators (re-render), we have the latest data
+                queryClient.setQueryData(['klines', symbol, interval], (oldData: any) => {
+                    if (!oldData) return oldData;
+                    const newData = [...oldData];
+                    const lastCandle = newData[newData.length - 1];
 
-                // If live candle is same time as last candle, update it. Otherwise push new.
-                if (lastCandle.time === liveCandle.time) {
-                    newData[newData.length - 1] = liveCandle;
-                } else if (liveCandle.time > lastCandle.time) {
-                    newData.push(liveCandle);
-                }
-                return newData;
-            });
+                    // If live candle is same time as last candle, update it. Otherwise push new.
+                    if (lastCandle.time === liveCandle.time) {
+                        newData[newData.length - 1] = liveCandle;
+                    } else if (liveCandle.time > lastCandle.time) {
+                        newData.push(liveCandle);
+                    }
+                    return newData;
+                });
+            } catch (error) {
+                console.warn("Error updating chart with live candle:", error);
+            }
         }
     }, [liveCandle, symbol, interval, queryClient]);
 
