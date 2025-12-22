@@ -34,6 +34,12 @@
   --color-magenta-700: #be185d;
   --color-brown-700: #78350f;
 
+  /* Teal/Cyan Palette (for Tritanopia) */
+  --color-teal-50: #f0fdfa;
+  --color-teal-100: #ccfbf1;
+  --color-teal-600: #0d9488;
+  --color-teal-700: #0f766e;
+
   /* Neutral/Grayscale Palette */
   --color-neutral-0: #ffffff;
   --color-neutral-50: #fafafa;
@@ -137,6 +143,38 @@
 }
 
 /* 
+  Accessibility Modes (CVD)
+*/
+
+/* Deuteranopia (Red-Green Blindness): Use Blue vs Orange */
+[data-theme='deuteranopia'] {
+  --color-functional-error: var(--color-amber-600);
+  --color-functional-error-bg: var(--color-amber-50);
+  --color-functional-success: var(--color-blue-600);
+  --color-functional-success-bg: var(--color-blue-50);
+  --color-functional-warning: var(--color-magenta-700); /* Distinct from both */
+  --color-functional-warning-bg: var(--color-red-50);
+
+  --color-brand-primary: var(--color-neutral-800); /* High contrast */
+  --color-brand-primary-hover: var(--color-neutral-900);
+  --color-brand-bg: var(--color-neutral-50);
+}
+
+/* Tritanopia (Blue-Yellow Blindness): Use Red vs Teal */
+[data-theme='tritanopia'] {
+  --color-functional-error: var(--color-teal-600); /* Teal/Cyan is distinct for Tritanopes */
+  --color-functional-error-bg: var(--color-teal-50);
+  --color-functional-success: var(--color-red-600); /* Red is preserved */
+  --color-functional-success-bg: var(--color-red-50);
+  --color-functional-warning: var(--color-neutral-800);
+  --color-functional-warning-bg: var(--color-neutral-50);
+
+  --color-brand-primary: var(--color-neutral-800);
+  --color-brand-primary-hover: var(--color-neutral-900);
+  --color-brand-bg: var(--color-neutral-50);
+}
+
+/* 
   III. Financial Tokens (TradeFlow Specific)
   Handling the Red/Green Reversal for Stock Markets.
 */
@@ -159,6 +197,24 @@
   --color-finance-profit-bg: var(--color-red-50);
   --color-finance-loss: var(--color-green-600);
   --color-finance-loss-bg: var(--color-green-50);
+}
+
+/* CVD Financial Mappings */
+
+/* Deuteranopia: Profit = Blue, Loss = Orange */
+[data-theme='deuteranopia'] {
+  --color-finance-profit: var(--color-blue-600);
+  --color-finance-profit-bg: var(--color-blue-50);
+  --color-finance-loss: var(--color-amber-600);
+  --color-finance-loss-bg: var(--color-amber-50);
+}
+
+/* Tritanopia: Profit = Red, Loss = Teal */
+[data-theme='tritanopia'] {
+  --color-finance-profit: var(--color-red-600);
+  --color-finance-profit-bg: var(--color-red-50);
+  --color-finance-loss: var(--color-teal-600);
+  --color-finance-loss-bg: var(--color-teal-50);
 }
 
 /* Global Utilities */

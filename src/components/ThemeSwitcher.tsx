@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { getRegionFromCountryCode, type CulturalRegion } from '../utils/regionMapping';
 
-type Theme = CulturalRegion | 'auto';
+type Theme = CulturalRegion | 'deuteranopia' | 'tritanopia' | 'auto';
 
 export const ThemeSwitcher: React.FC = () => {
     const [currentTheme, setCurrentTheme] = useState<Theme>('auto');
@@ -105,11 +105,30 @@ export const ThemeSwitcher: React.FC = () => {
                 South Asian
             </button>
 
-            {currentTheme === 'auto' && detectedCountry && (
-                <span style={styles.autoInfo}>
-                    Detected: {detectedCountry} → {detectedRegion?.replace('-', ' ')} Theme
-                </span>
-            )}
-        </div>
+            <span style={{ marginLeft: '0.5rem', marginRight: '0.5rem', borderLeft: '1px solid var(--color-neutral-300)', height: '20px' }}></span>
+
+            <button
+                style={styles.button('deuteranopia')}
+                onClick={() => setCurrentTheme('deuteranopia')}
+                title="Red-Green Color Blindness"
+            >
+                ♿ Deuteranopia Mode (Red-Green Blindness)
+            </button>
+            <button
+                style={styles.button('tritanopia')}
+                onClick={() => setCurrentTheme('tritanopia')}
+                title="Blue-Yellow Color Blindness"
+            >
+                ♿ Tritanopia Mode (Blue-Yellow Blindness)
+            </button>
+
+            {
+                currentTheme === 'auto' && detectedCountry && (
+                    <span style={styles.autoInfo}>
+                        Detected: {detectedCountry} → {detectedRegion?.replace('-', ' ')} Theme
+                    </span>
+                )
+            }
+        </div >
     );
 };

@@ -9,14 +9,23 @@ import type { Stock } from './types/market';
 
 import { LanguageSwitcher } from './components/LanguageSwitcher';
 
-function App() {
+import { CurrencyProvider } from './context/CurrencyContext';
+import { CurrencySelector } from './components/CurrencySelector';
+import { PortfolioProvider, usePortfolio } from './context/PortfolioContext';
+import { PsychologyDashboard } from './components/PsychologyDashboard';
+
+// Wrapper component to provide context
+const AppContent = () => {
   const [allTokens, setAllTokens] = useState<Stock[]>([]);
   const [activeSymbols, setActiveSymbols] = useState<string[]>([
     'BTCUSDT', 'ETHUSDT', 'BNBUSDT', 'SOLUSDT', 'XRPUSDT', 'DOGEUSDT'
   ]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedStock, setSelectedStock] = useState<Stock | null>(null);
-  const [themeKey, setThemeKey] = useState(0); // Used to force chart re-render
+  const [themeKey, setThemeKey] = useState(0);
+  const [showDashboard, setShowDashboard] = useState(false); // Psychology Mode Dashboard
+
+  const { balance } = usePortfolio(); // Display balance in header
 
   // Hook for real-time updates
   const liveUpdates = useBinanceWebSocket(activeSymbols);
@@ -31,7 +40,7 @@ function App() {
     loadData();
   }, []);
 
-  // Listen for theme changes to update chart colors
+  // Listen for theme changes
   useEffect(() => {
     const observer = new MutationObserver(() => {
       setThemeKey(prev => prev + 1);
@@ -46,7 +55,6 @@ function App() {
     }
   };
 
-  // Merge static data with live WebSocket updates
   const activeStocks = allTokens
     .filter(token => activeSymbols.includes(token.symbol))
     .map(token => {
@@ -57,7 +65,6 @@ function App() {
       return token;
     });
 
-  // Keep the selected stock updated with live data too
   const liveSelectedStock = selectedStock
     ? activeStocks.find(s => s.symbol === selectedStock.symbol) || selectedStock
     : null;
@@ -151,25 +158,6 @@ function App() {
       minWidth: '320px',
       maxWidth: '100%',
     },
-    footer: {
-      width: '96%',
-      maxWidth: '100%',
-      margin: '0 auto 1rem auto',
-      background: 'rgba(255, 255, 255, 0.6)',
-      backdropFilter: 'blur(10px)',
-      WebkitBackdropFilter: 'blur(10px)',
-      borderRadius: '1.25rem',
-      border: `1px solid var(--color-border-subtle)`,
-      padding: '1.5rem 2rem',
-      flexShrink: 0,
-    },
-    footerContent: {
-      width: '100%',
-      fontSize: 'clamp(0.75rem, 1.5vw, 0.875rem)',
-      color: 'var(--color-text-secondary)',
-      lineHeight: 1.6,
-      fontFamily: "'Montserrat', sans-serif",
-    },
   };
 
   return (
@@ -181,6 +169,22 @@ function App() {
               TradeFlow
             </h1>
             <div style={styles.headerControls}>
+              <div style={{
+                padding: '0.5rem 1rem',
+                background: 'rgba(255,255,255,0.4)',
+                borderRadius: '0.5rem',
+                fontWeight: 'bold',
+                marginRight: '1rem',
+                cursor: 'pointer',
+                border: '1px solid var(--color-border-subtle)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem'
+              }} onClick={() => setShowDashboard(true)}>
+                <span>🧠</span>
+                <span>${balance.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+              </div>
+              <CurrencySelector />
               <LanguageSwitcher />
               <div style={styles.subtitle}>
                 Global Investment Dashboard
@@ -223,15 +227,39 @@ function App() {
         />
       )}
 
-      <footer style={styles.footer}>
-        <div style={styles.footerContent}>
-          <p>
-            <strong>Architecture Note:</strong> The <code>StockTrend</code> component doesn't know about "Red" or "Green".
-            It only knows <code>finance-profit</code> and <code>finance-loss</code>. The <strong>Design Tokens</strong> handle the cultural translation automatically.
-          </p>
+      {showDashboard && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          background: 'rgba(0,0,0,0.8)', zIndex: 2000,
+          padding: '2rem', overflowY: 'auto'
+        }}>
+          <div style={{ maxWidth: '1200px', margin: '0 auto', background: '#f9fafb', borderRadius: '1rem', position: 'relative' }}>
+            <button
+              onClick={() => setShowDashboard(false)}
+              style={{
+                position: 'absolute', top: '1rem', right: '1rem',
+                background: 'none', border: 'none', fontSize: '2rem', cursor: 'pointer',
+                color: 'var(--color-neutral-600)'
+              }}
+            >
+              ×
+            </button>
+            <PsychologyDashboard activeStocks={activeStocks} />
+          </div>
         </div>
-      </footer>
+      )}
+
     </div>
+  );
+};
+
+function App() {
+  return (
+    <CurrencyProvider>
+      <PortfolioProvider>
+        <AppContent />
+      </PortfolioProvider>
+    </CurrencyProvider>
   );
 }
 

@@ -1,17 +1,23 @@
 import React, { useState } from 'react';
 import type { Stock } from '../types/market';
+import { useCurrency } from '../context/CurrencyContext'; // Import context
 import { CandleChart } from './CandleChart';
 import { StockTrend } from './StockTrend';
+import { TradeModal } from './TradeModal';
 
 interface StockDetailModalProps {
     stock: Stock | null;
     onClose: () => void;
-    themeKey: number; // Used to force re-render on theme change
+    themeKey: number;
 }
 
 const TIMEFRAMES = ['1m', '15m', '1h', '4h', '1d'];
 
 export const StockDetailModal: React.FC<StockDetailModalProps> = ({ stock, onClose, themeKey }) => {
+    const { currency, rate, symbol } = useCurrency(); // Use context
+    // State to control the Trade Modal visibility
+    const [showTradeModal, setShowTradeModal] = useState(false);
+
     const [interval, setInterval] = useState('1h');
     const [indicators, setIndicators] = useState({
         sma20: false,
@@ -117,8 +123,25 @@ export const StockDetailModal: React.FC<StockDetailModalProps> = ({ stock, onClo
                     <div>
                         <div style={styles.title}>{stock.name} ({stock.symbol})</div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginTop: '0.5rem' }}>
-                            <span style={{ fontSize: '1.25rem', fontWeight: 'bold' }}>${stock.price.toFixed(2)}</span>
+                            <span style={{ fontSize: '1.25rem', fontWeight: 'bold' }}>
+                                {symbol}{(stock.price * rate).toFixed(stock.price * rate < 1 ? 4 : 2)}
+                            </span>
                             <StockTrend change={stock.change} changePercent={stock.changePercent} />
+                            <button
+                                onClick={() => setShowTradeModal(true)}
+                                style={{
+                                    padding: '0.5rem 1rem',
+                                    borderRadius: '0.375rem',
+                                    backgroundColor: 'var(--color-brand-primary)',
+                                    color: 'white',
+                                    border: 'none',
+                                    fontWeight: 'bold',
+                                    cursor: 'pointer',
+                                    marginLeft: '1rem'
+                                }}
+                            >
+                                TRADE
+                            </button>
                         </div>
                     </div>
                     <button style={styles.closeButton} onClick={onClose}>×</button>
@@ -166,13 +189,20 @@ export const StockDetailModal: React.FC<StockDetailModalProps> = ({ stock, onClo
 
                     {/* Key forces re-mount on theme or interval change, BUT NOT on indicators change to preserve zoom */}
                     <CandleChart
-                        key={`${stock.symbol}-${interval}-${themeKey}`}
+                        key={`${stock.symbol}-${interval}-${themeKey}-${currency}`}
                         symbol={stock.symbol}
                         interval={interval}
                         indicators={indicators}
+                        currency={{ code: currency, rate, symbol }}
                     />
                 </div>
             </div>
+            {showTradeModal && stock && (
+                <TradeModal
+                    stock={stock}
+                    onClose={() => setShowTradeModal(false)}
+                />
+            )}
         </div>
     );
 };

@@ -2,6 +2,7 @@ import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import type { Stock } from '../types/market';
+import { useCurrency } from '../context/CurrencyContext';
 import { StockTrend } from './StockTrend';
 import { fetchGlobalMetrics, fetchTrendingCoins } from '../services/coingecko';
 import { fetchFearAndGreedIndex } from '../services/alternative';
@@ -33,6 +34,9 @@ export const MarketOverview: React.FC<MarketOverviewProps> = ({ stocks, isLoadin
         queryFn: fetchTrendingCoins,
         staleTime: 1000 * 60 * 15, // 15 minutes
     });
+
+    // --- Currency Conversion ---
+    const { rate, symbol } = useCurrency();
 
     const styles = {
         container: {
@@ -232,7 +236,7 @@ export const MarketOverview: React.FC<MarketOverviewProps> = ({ stocks, isLoadin
                     <div style={styles.metricItem}>
                         <span>{t('market_cap')}:</span>
                         <span style={styles.metricValue}>
-                            ${(globalMetrics.total_market_cap.usd / 1e12).toFixed(2)}T
+                            {symbol}{(globalMetrics.total_market_cap.usd * rate / 1e12).toFixed(2)}T
                         </span>
                     </div>
                     <div style={styles.metricItem}>
@@ -316,7 +320,9 @@ export const MarketOverview: React.FC<MarketOverviewProps> = ({ stocks, isLoadin
                             </div>
                             <div style={styles.name}>{stock.symbol}</div>
                             <div style={styles.priceRow}>
-                                <span style={styles.price}>${stock.price < 1 ? stock.price.toFixed(4) : stock.price.toFixed(2)}</span>
+                                <span style={styles.price}>
+                                    {symbol}{(stock.price * rate).toFixed(stock.price * rate < 1 ? 4 : 2)}
+                                </span>
                                 <StockTrend change={stock.change} changePercent={stock.changePercent} />
                             </div>
                         </div>

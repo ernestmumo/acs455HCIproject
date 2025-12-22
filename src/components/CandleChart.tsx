@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useMemo } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { createChart, ColorType, type IChartApi, CandlestickSeries, LineSeries, HistogramSeries } from 'lightweight-charts';
 import { fetchKlines } from '../services/binance';
@@ -14,9 +14,19 @@ interface CandleChartProps {
         ema50: boolean;
         macd: boolean;
     };
+    currency?: {
+        code: string;
+        rate: number;
+        symbol: string;
+    };
 }
 
-export const CandleChart: React.FC<CandleChartProps> = ({ symbol, interval, indicators }) => {
+export const CandleChart: React.FC<CandleChartProps> = ({
+    symbol,
+    interval,
+    indicators,
+    currency = { code: 'USD', rate: 1, symbol: '$' }
+}) => {
     const chartContainerRef = useRef<HTMLDivElement>(null);
     const macdContainerRef = useRef<HTMLDivElement>(null);
     const chartRef = useRef<IChartApi | null>(null);
@@ -43,6 +53,18 @@ export const CandleChart: React.FC<CandleChartProps> = ({ symbol, interval, indi
         // Hybrid Mode: Poll only if WebSocket is NOT connected
         refetchInterval: isConnected ? false : 2000,
     });
+
+    // Apply currency scaling
+    const scaledKlines = useMemo(() => {
+        if (!klinesData) return [];
+        return klinesData.map(k => ({
+            ...k,
+            open: k.open * currency.rate,
+            high: k.high * currency.rate,
+            low: k.low * currency.rate,
+            close: k.close * currency.rate
+        }));
+    }, [klinesData, currency.rate]);
 
     // --- Effect 1: Initialize Main Chart (Runs only on mount or symbol/interval change) ---
     useEffect(() => {
@@ -72,6 +94,9 @@ export const CandleChart: React.FC<CandleChartProps> = ({ symbol, interval, indi
                 timeVisible: true,
                 secondsVisible: false,
             },
+            localization: {
+                priceFormatter: (p: number) => currency.symbol + p.toFixed(2),
+            },
         });
 
         const candlestickSeries = chart.addSeries(CandlestickSeries, {
@@ -81,6 +106,10 @@ export const CandleChart: React.FC<CandleChartProps> = ({ symbol, interval, indi
             borderDownColor: lossColor,
             wickUpColor: profitColor,
             wickDownColor: lossColor,
+            priceFormat: {
+                type: 'custom',
+                formatter: (price: number) => currency.symbol + price.toFixed(2),
+            },
         });
         candlestickSeriesRef.current = candlestickSeries;
         chartRef.current = chart;
@@ -194,28 +223,23 @@ export const CandleChart: React.FC<CandleChartProps> = ({ symbol, interval, indi
 
     // --- Effect 2: Update Data (Runs when data changes) ---
     useEffect(() => {
-        if (!klinesData || !chartRef.current || !candlestickSeriesRef.current) return;
+        if (!scaledKlines || scaledKlines.length === 0 || !chartRef.current || !candlestickSeriesRef.current) return;
 
         const chart = chartRef.current;
         const macdChart = macdChartRef.current;
 
         // Update Main Series
-        candlestickSeriesRef.current.setData(klinesData as any);
+        candlestickSeriesRef.current.setData(scaledKlines as any);
 
         // --- Indicators Calculation & Rendering ---
         try {
-            // Get colors again for indicators (could be optimized, but fine for now)
+            // Get colors again for indicators
             const style = getComputedStyle(document.body);
             const profitColor = style.getPropertyValue('--color-finance-profit').trim();
             const lossColor = style.getPropertyValue('--color-finance-loss').trim();
 
-            // Clear previous overlays if needed (for simplicity, we just add new ones, 
-            // but in a real app we should remove old series. 
-            // Since we re-create chart on indicator toggle, this is okay for now.)
-
             if (indicators.sma20) {
-                const smaData = calculateSMA(klinesData, 20);
-                console.log('SMA20 Data:', smaData); // Debug log
+                const smaData = calculateSMA(scaledKlines, 20);
                 if (!smaSeriesRef.current) {
                     smaSeriesRef.current = chart.addSeries(LineSeries, { color: '#2962FF', lineWidth: 2 });
                 }
@@ -228,8 +252,7 @@ export const CandleChart: React.FC<CandleChartProps> = ({ symbol, interval, indi
             }
 
             if (indicators.ema50) {
-                const emaData = calculateEMA(klinesData, 50);
-                console.log('EMA50 Data:', emaData); // Debug log
+                const emaData = calculateEMA(scaledKlines, 50);
                 if (!emaSeriesRef.current) {
                     emaSeriesRef.current = chart.addSeries(LineSeries, { color: '#FF6D00', lineWidth: 2 });
                 }
@@ -242,7 +265,7 @@ export const CandleChart: React.FC<CandleChartProps> = ({ symbol, interval, indi
             }
 
             if (indicators.macd && macdChart && macdHistogramSeriesRef.current) {
-                const macdData = calculateMACD(klinesData);
+                const macdData = calculateMACD(scaledKlines);
 
                 const histogramData = macdData.map(d => ({
                     time: d.time,
@@ -261,14 +284,12 @@ export const CandleChart: React.FC<CandleChartProps> = ({ symbol, interval, indi
                     (macdChart as any)._isReady.current = true;
                 }
 
-                // Initial Sync: Force MACD to match Main Chart's current range
-                // This prevents the MACD chart (which defaults to full range) from resetting the Main Chart via sync
+                // Initial Sync
                 if ((macdChart as any)._ignoreEvents?.current) {
                     const currentRange = chart.timeScale().getVisibleRange();
                     if (currentRange) {
                         try { macdChart.timeScale().setVisibleRange(currentRange); } catch (e) { console.warn(e); }
                     }
-                    // Now allow events to flow
                     (macdChart as any)._ignoreEvents.current = false;
                 }
             }
@@ -285,13 +306,21 @@ export const CandleChart: React.FC<CandleChartProps> = ({ symbol, interval, indi
             hasFittedContent.current = true;
         }
 
-    }, [klinesData, indicators]); // Re-run when data or indicators change
+    }, [scaledKlines, indicators, currency]); // Re-run when scaled data, indicators, or currency changes
 
     // --- Effect to Update Chart with Live Data ---
     useEffect(() => {
         if (liveCandle && candlestickSeriesRef.current && chartRef.current) {
             try {
-                candlestickSeriesRef.current.update(liveCandle);
+                // Scale the live candle
+                const scaledLiveCandle = {
+                    ...liveCandle,
+                    open: liveCandle.open * currency.rate,
+                    high: liveCandle.high * currency.rate,
+                    low: liveCandle.low * currency.rate,
+                    close: liveCandle.close * currency.rate
+                };
+                candlestickSeriesRef.current.update(scaledLiveCandle);
 
                 // Update React Query Cache to persist the live candle
                 // This ensures that if we toggle indicators (re-render), we have the latest data
